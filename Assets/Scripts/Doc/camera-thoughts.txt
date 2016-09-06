@@ -1,0 +1,35 @@
+CameraNotableObject priorities:
+	Character	25
+	Explosion	60
+	Projectile	75
+TODO: don't mix notable object and TurnManager attention seeker priorities, these values are from totally different realms.
+
+CameraNotableObject is the component that must be followed by camera
+CameraNotableEvent is the component that must be focused by camera for some duration of time.
+	It can be implemented as CameraNotableObject with Duration parameter set to non-infinite value.
+	Events should have more priority than notable objects.
+	Character moved - spawn CameraNotableEvent. Something exploded - again, spawn timed event.
+	Object became AttentionTarget of TurnManager - spawn event. Character started turn - spawn event.
+	Camera must focus on _closest_ event from the list of events with the same priority.
+	Make some duration-based parameter indicating how long events shouldn't be focused after last point in time when camera was scrolled by the user.
+	Make parameter
+		FocusKind {
+			BringIntoView,	// Move camera so that the object is visible by the camera.
+			Center			// Make camera centered on the object.
+		}
+	When time is up, deactivate component instead of destroying it. Re-enabled component must restart its timer.
+
+New priority list:
+	Object/Event:			Priority		Timed?
+DEL	Camera Pos				0				No						// TODO: priority = 0, timed = no, isn't it the same as no such notable object at all?
+DEL	Character				50				No						// TODO: remove Character from priority list. It's neither event nor persistent attention target ("Character Moved" removes the need of constant attention to a character).
+	Lost Control			50				Yes
+	Bonus Arrived			80				Yes
+	Projectile				100				No
+	Health Accounted		110				Yes
+	Closing Speech			120				Yes
+	Explosion				150				Yes
+	Character Death			200				Yes
+	Received Turn Control	250				Yes						// This event should occur when TurnManager transfers control to a new character.
+	Character Moved			300				Yes
+	Camera Scrolled			500				Yes

@@ -1,0 +1,25 @@
+CarriedWeapon - takes the role of existing ProjectileLauncher. It listens OnFireTriggered message, sets FireTrigger,
+	manages cooldown, communicates with animator just like CarriedItem do. However, part of functionality must be delegated
+	to ShootingController (rate of fire along with number of shots) and MultiSpawner (instantiation, impulse inheritance),
+	both of which described below.
+
+ShootingController - component that controls how often and how many shots will be produced when fire triggered.
+	int NumShotsToProduce;
+	float Rate;		// Number of shots produced per second.
+	This component communicates with animator but animator is not required to exist. Component sets SingleShotTrigger on every
+	shot being performed. AMEND: no, it doesn't communicate with animator. It sends message OnRequestSingleShot, which is listened
+	by CarriedWeapon. CarriedWeapon can set true to data.StopShooting, which means that ShootingController must stop shooting.
+	After all shots have been made, this component sends OnShootingCompleted message that must be listened by CarriedWeapon component,
+	which, in turn, sets StopFiringTrigger on its animator and resets cooldown value.
+
+// TODO: consider renaming "MultiSpawner" to "ProjectileSpawner" as it handles linear and angular velocity-related stuff along
+// with impulse inheritance.
+MultiSpawner - component that holds settings for a single shot - number of projectiles to emit, their velocitiy and directions.
+	ShootingController relies on this component: each shot of ShootingController invokes MultiSpawner.SpawnObjects (). Or even
+	better: each shot ends up in sending message "OnPerformSingleShot" which is listened by MultiSpawner. It's definitely better
+	because MultiSpawner is responsible for spawning projectile-like objects having rigidbody attached, while other kind of shot
+	might consist of ray-casted bullets. Yes, another message again. So be it.
+	Spawner relays WeaponConfiguration to spawned objects with weaponConfiguration.SendConfiguration ( spawnedGameObject );
+	Velocity is extracted from WeaponConfiguration with weaponConfiguration.TryGetFloat ( ForceParameterName, out normalizedForce )
+	and interpolated between MinVelocity and MaxVelocity settings found in global fields of MultiSpawner. AngularVelocityDependsOnForce
+	perfectly fits with normalizedForce extracted in this particular component.
