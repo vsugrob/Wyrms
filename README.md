@@ -19,6 +19,8 @@ it's ok to walk over such bridge, but it will break once some unlucky worm falls
 
 ### How to play ###
 - Open up the project in **Unity Editor**.
+- **NOTE:** this project uses PhysX features that were deprecated since Unity 5.
+It compiles and runs successfully in Unity 4.7.2f1.
 - Open `Sandbox.unity` scene file from the **Project Explorer** window.
 
 #### Controls ####
