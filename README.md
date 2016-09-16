@@ -4,6 +4,7 @@ This game is an attempt to recreate Worms Armageddon gameplay
 with addition of new physics features driven by PhysX.
 Besides traditionally destructible terrain,
 it features (or able to feature):
+
 - Different friction on various walkable materials.
 Some surfaces are icy, others are sticky.
 - In addition to wind,
